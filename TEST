@@ -56,7 +56,7 @@ local function safeWaitChain(parent, timeout, ...)
 end
 
 -- ========================================================================
--- 📊 LIVE FARM TRACKER UI (DRAGGABLE & UPDATING)
+-- 📊 LIVE FARM TRACKER UI (CENTERED, BIGGER, RESPONSIVE, DRAGGABLE)
 -- ========================================================================
 task.spawn(function()
     local parentGui = (pcall(function() return CoreGui.Name end) and CoreGui) or PlayerGui
@@ -73,46 +73,57 @@ task.spawn(function()
     mainFrame.Name = "MainFrame"
     mainFrame.Parent = screenGui
     mainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-    mainFrame.BackgroundTransparency = 0.3 -- Medyo transparent para hindi nakaharang
-    mainFrame.Position = UDim2.new(0.85, 0, 0.1, 0)
-    mainFrame.Size = UDim2.new(0, 160, 0, 70)
+    mainFrame.BackgroundTransparency = 0.2 -- Konting dilim pa para mas lutang ang text
+    
+    -- GINAWANG GITNA AT RESPONSIVE
+    mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+    mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0) -- Gitnang-gitna ng screen
+    mainFrame.Size = UDim2.new(0.25, 0, 0.15, 0) -- Sumusunod sa screen size
     mainFrame.BorderSizePixel = 0
     mainFrame.Active = true
-    mainFrame.Draggable = true -- Pwede mong i-drag sa screen!
+    mainFrame.Draggable = true 
 
     local uiCorner = Instance.new("UICorner")
-    uiCorner.CornerRadius = UDim.new(0, 6)
+    uiCorner.CornerRadius = UDim.new(0, 10)
     uiCorner.Parent = mainFrame
 
+    -- SIZE CONSTRAINT (Para balanse pa rin ang laki sa iba't ibang VPS monitors)
+    local sizeConstraint = Instance.new("UISizeConstraint")
+    sizeConstraint.MinSize = Vector2.new(280, 120)
+    sizeConstraint.MaxSize = Vector2.new(450, 180)
+    sizeConstraint.Parent = mainFrame
+
+    -- RESPONSIVE TEXT LABELS
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Parent = mainFrame
     titleLabel.BackgroundTransparency = 1
-    titleLabel.Size = UDim2.new(1, 0, 0, 20)
+    titleLabel.Position = UDim2.new(0, 0, 0.05, 0)
+    titleLabel.Size = UDim2.new(1, 0, 0.25, 0)
     titleLabel.Font = Enum.Font.GothamBold
     titleLabel.Text = "Jadey😴 Tracker"
     titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    titleLabel.TextSize = 12
+    titleLabel.TextScaled = true 
 
     local lvlLabel = Instance.new("TextLabel")
     lvlLabel.Parent = mainFrame
     lvlLabel.BackgroundTransparency = 1
-    lvlLabel.Position = UDim2.new(0, 10, 0, 25)
-    lvlLabel.Size = UDim2.new(1, -20, 0, 20)
+    lvlLabel.Position = UDim2.new(0.05, 0, 0.4, 0)
+    lvlLabel.Size = UDim2.new(0.9, 0, 0.2, 0)
     lvlLabel.Font = Enum.Font.GothamSemibold
     lvlLabel.Text = "🌟 Level: Loading..."
     lvlLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
-    lvlLabel.TextSize = 13
+    lvlLabel.TextScaled = true
     lvlLabel.TextXAlignment = Enum.TextXAlignment.Left
 
     local diaLabel = Instance.new("TextLabel")
     diaLabel.Parent = mainFrame
     diaLabel.BackgroundTransparency = 1
-    diaLabel.Position = UDim2.new(0, 10, 0, 45)
-    diaLabel.Size = UDim2.new(1, -20, 0, 20)
+    diaLabel.Position = UDim2.new(0.05, 0, 0.7, 0)
+    diaLabel.Size = UDim2.new(0.9, 0, 0.2, 0)
     diaLabel.Font = Enum.Font.GothamSemibold
     diaLabel.Text = "💎 Diamonds: Loading..."
     diaLabel.TextColor3 = Color3.fromRGB(85, 255, 255)
-    diaLabel.TextSize = 13
+    diaLabel.TextScaled = true
     diaLabel.TextXAlignment = Enum.TextXAlignment.Left
 
     -- Auto-Updater Loop
@@ -129,7 +140,7 @@ task.spawn(function()
                 diaLabel.Text = "💎 Diamonds: " .. (gameDiaLabel.Text or "0")
             end
             
-            -- Hide kapag active ang captcha para hindi makaistorbo
+            -- Magtatago saglit kapag nagso-solve ng captcha
             mainFrame.Visible = not getgenv().IsCaptchaActive
         end)
     end
