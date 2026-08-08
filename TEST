@@ -57,7 +57,7 @@ local function safeWaitChain(parent, timeout, ...)
 end
 
 -- ========================================================================
--- 📊 LIVE FARM TRACKER UI (DYNAMIC: ART CLASS vs BALANCE)
+-- 📊 LIVE FARM TRACKER UI (UNMOVABLE)
 -- ========================================================================
 task.spawn(function()
     local parentGui = (pcall(function() return CoreGui.Name end) and CoreGui) or PlayerGui
@@ -80,26 +80,28 @@ task.spawn(function()
     
     mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
     mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-    mainFrame.Size = UDim2.new(0.8, 0, 0.35, 0) 
+    mainFrame.Size = UDim2.new(0.8, 0, 0.42, 0) 
     mainFrame.BorderSizePixel = 0
-    mainFrame.Active = true
-    mainFrame.Draggable = true 
+    
+    -- GINAWANG UNMOVABLE (False ang Active at Draggable)
+    mainFrame.Active = false
+    mainFrame.Draggable = false 
 
     local uiCorner = Instance.new("UICorner")
     uiCorner.CornerRadius = UDim.new(0, 8)
     uiCorner.Parent = mainFrame
 
     local sizeConstraint = Instance.new("UISizeConstraint")
-    sizeConstraint.MinSize = Vector2.new(120, 60)
-    sizeConstraint.MaxSize = Vector2.new(300, 140)
+    sizeConstraint.MinSize = Vector2.new(120, 70)
+    sizeConstraint.MaxSize = Vector2.new(300, 160)
     sizeConstraint.Parent = mainFrame
 
-    -- DYNAMIC TITLE
+    -- DYNAMIC TITLE (Line 1)
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Parent = mainFrame
     titleLabel.BackgroundTransparency = 1
-    titleLabel.Position = UDim2.new(0, 0, 0.05, 0)
-    titleLabel.Size = UDim2.new(1, 0, 0.22, 0)
+    titleLabel.Position = UDim2.new(0, 0, 0.03, 0)
+    titleLabel.Size = UDim2.new(1, 0, 0.18, 0)
     titleLabel.Font = Enum.Font.GothamBold
     titleLabel.Text = isArtClass and "Jadey😴 Art Class" or "Jadey😴 AFK"
     titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -110,12 +112,12 @@ task.spawn(function()
     titleSizeConstraint.MinTextSize = 8
     titleSizeConstraint.Parent = titleLabel
 
-    -- DYNAMIC MODE INDICATOR
+    -- DYNAMIC MODE INDICATOR (Line 2)
     local modeLabel = Instance.new("TextLabel")
     modeLabel.Parent = mainFrame
     modeLabel.BackgroundTransparency = 1
-    modeLabel.Position = UDim2.new(0.05, 0, 0.28, 0)
-    modeLabel.Size = UDim2.new(0.9, 0, 0.22, 0)
+    modeLabel.Position = UDim2.new(0.05, 0, 0.23, 0)
+    modeLabel.Size = UDim2.new(0.9, 0, 0.18, 0)
     modeLabel.Font = Enum.Font.GothamSemibold
     modeLabel.Text = isArtClass and "🎨 Mode: Auto-Draw" or "⚖️ Mode: AFK Farm"
     modeLabel.TextColor3 = isArtClass and Color3.fromRGB(255, 170, 255) or Color3.fromRGB(170, 255, 127)
@@ -127,12 +129,12 @@ task.spawn(function()
     modeSizeConstraint.MinTextSize = 7
     modeSizeConstraint.Parent = modeLabel
 
-    -- LEVEL
+    -- LEVEL (Line 3)
     local lvlLabel = Instance.new("TextLabel")
     lvlLabel.Parent = mainFrame
     lvlLabel.BackgroundTransparency = 1
-    lvlLabel.Position = UDim2.new(0.05, 0, 0.51, 0)
-    lvlLabel.Size = UDim2.new(0.9, 0, 0.22, 0)
+    lvlLabel.Position = UDim2.new(0.05, 0, 0.43, 0)
+    lvlLabel.Size = UDim2.new(0.9, 0, 0.18, 0)
     lvlLabel.Font = Enum.Font.GothamSemibold
     lvlLabel.Text = "🌟 Level: Loading..."
     lvlLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
@@ -144,12 +146,12 @@ task.spawn(function()
     lvlSizeConstraint.MinTextSize = 8
     lvlSizeConstraint.Parent = lvlLabel
 
-    -- DIAMONDS
+    -- DIAMONDS (Line 4)
     local diaLabel = Instance.new("TextLabel")
     diaLabel.Parent = mainFrame
     diaLabel.BackgroundTransparency = 1
-    diaLabel.Position = UDim2.new(0.05, 0, 0.74, 0)
-    diaLabel.Size = UDim2.new(0.9, 0, 0.22, 0)
+    diaLabel.Position = UDim2.new(0.05, 0, 0.63, 0)
+    diaLabel.Size = UDim2.new(0.9, 0, 0.18, 0)
     diaLabel.Font = Enum.Font.GothamSemibold
     diaLabel.Text = "💎 Diamonds: Loading..."
     diaLabel.TextColor3 = Color3.fromRGB(85, 255, 255)
@@ -161,20 +163,63 @@ task.spawn(function()
     diaSizeConstraint.MinTextSize = 8
     diaSizeConstraint.Parent = diaLabel
 
+    -- TRADE BAN STATUS (Line 5)
+    local tradeLabel = Instance.new("TextLabel")
+    tradeLabel.Parent = mainFrame
+    tradeLabel.BackgroundTransparency = 1
+    tradeLabel.Position = UDim2.new(0.05, 0, 0.83, 0)
+    tradeLabel.Size = UDim2.new(0.9, 0, 0.18, 0)
+    tradeLabel.Font = Enum.Font.GothamBold
+    tradeLabel.Text = "💱 Trade: Checking..."
+    tradeLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+    tradeLabel.TextScaled = true
+    tradeLabel.TextXAlignment = Enum.TextXAlignment.Left
+    
+    local tradeSizeConstraint = Instance.new("UITextSizeConstraint")
+    tradeSizeConstraint.MaxTextSize = 13
+    tradeSizeConstraint.MinTextSize = 7
+    tradeSizeConstraint.Parent = tradeLabel
+
     -- Auto-Updater Loop
     while task.wait(1) do
         pcall(function()
             local gameLvlLabel = safeFind(PlayerGui, "HUD", "Frame", "XPStuff", "Level")
             local gameDiaLabel = safeFind(PlayerGui, "HUD", "Frame", "Middle", "DiamondsFrame", "DiamondAmount")
+            local tradeButton = safeFind(PlayerGui, "ProfilePreviewGui", "ProfilePreview", "Trade")
 
+            local currentLvl = 0
+
+            -- 1. I-Update ang Level
             if gameLvlLabel and gameLvlLabel:IsA("TextLabel") then
-                lvlLabel.Text = "🌟 Level: " .. (gameLvlLabel.Text or "0")
+                local lvlText = gameLvlLabel.Text or "0"
+                lvlLabel.Text = "🌟 Level: " .. lvlText
+                currentLvl = tonumber(string.match(lvlText, "%d+")) or 0
             end
 
+            -- 2. I-Update ang Diamonds
             if gameDiaLabel and gameDiaLabel:IsA("TextLabel") then
                 diaLabel.Text = "💎 Diamonds: " .. (gameDiaLabel.Text or "0")
             end
             
+            -- 3. TRADE BAN LOGIC
+            if currentLvl >= 75 then
+                if tradeButton then
+                    if tradeButton.Visible == true then
+                        tradeLabel.Text = "✅ Trade: Unlocked"
+                        tradeLabel.TextColor3 = Color3.fromRGB(85, 255, 127) 
+                    else
+                        tradeLabel.Text = "🚫 TRADE BANNED"
+                        tradeLabel.TextColor3 = Color3.fromRGB(255, 75, 75) 
+                    end
+                else
+                    tradeLabel.Text = "💱 Trade: Loading UI..."
+                    tradeLabel.TextColor3 = Color3.fromRGB(255, 255, 100) 
+                end
+            else
+                tradeLabel.Text = "🔒 Trade: Locked (< 75)"
+                tradeLabel.TextColor3 = Color3.fromRGB(150, 150, 150) 
+            end
+
             mainFrame.Visible = not getgenv().IsCaptchaActive
         end)
     end
@@ -341,7 +386,6 @@ local function clickUI(element)
     end
 end
 
--- BINALIK ANG BUONG LISTAHAN DITO:
 local safeEgirlNames = {
     "Luna", "Angel", "Mimi", "Yuna", "Ari", "Lily", "Misa", "Aiko",
     "Sora", "Kira", "Nini", "Rin", "Yuki", "Nyla", "Ava", "Bella",
