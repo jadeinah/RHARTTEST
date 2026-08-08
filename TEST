@@ -29,6 +29,7 @@ local CoreGui = getService("CoreGui")
 local LocalPlayer = Players.LocalPlayer or Players.PlayerAdded:Wait()
 local PlayerGui = LocalPlayer:WaitForChild("PlayerGui", 9999)
 
+-- DEFAULT CONFIG FALLBACK
 if type(getgenv().Config) ~= "table" then
     getgenv().Config = { AutoArtClass = true, AutoCaptcha = true }
 end
@@ -56,11 +57,13 @@ local function safeWaitChain(parent, timeout, ...)
 end
 
 -- ========================================================================
--- 📊 LIVE FARM TRACKER UI (ULTRA-COMPACT FOR TINY WINDOWS)
+-- 📊 LIVE FARM TRACKER UI (DYNAMIC: ART CLASS vs AFK)
 -- ========================================================================
 task.spawn(function()
     local parentGui = (pcall(function() return CoreGui.Name end) and CoreGui) or PlayerGui
     if parentGui:FindFirstChild("JadeyTracker") then parentGui.JadeyTracker:Destroy() end
+
+    local isArtClass = getgenv().Config.AutoArtClass == true
 
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = "JadeyTracker"
@@ -75,10 +78,9 @@ task.spawn(function()
     mainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
     mainFrame.BackgroundTransparency = 0.2
     
-    -- GITNA AT RESPONSIVE
     mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
     mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
-    mainFrame.Size = UDim2.new(0.8, 0, 0.3, 0) -- Kukuha ng 80% width ng maliit na screen
+    mainFrame.Size = UDim2.new(0.8, 0, 0.35, 0) -- Medyo hinabaan para magkasya ang 4 na lines
     mainFrame.BorderSizePixel = 0
     mainFrame.Active = true
     mainFrame.Draggable = true 
@@ -87,20 +89,19 @@ task.spawn(function()
     uiCorner.CornerRadius = UDim.new(0, 8)
     uiCorner.Parent = mainFrame
 
-    -- FIX: MAS MALIIT NA SIZE CONSTRAINT PARA SA VPS SCREENS
     local sizeConstraint = Instance.new("UISizeConstraint")
-    sizeConstraint.MinSize = Vector2.new(120, 50) -- Kayang pumaliit hanggang 120px
-    sizeConstraint.MaxSize = Vector2.new(300, 120)
+    sizeConstraint.MinSize = Vector2.new(120, 60)
+    sizeConstraint.MaxSize = Vector2.new(300, 140)
     sizeConstraint.Parent = mainFrame
 
-    -- TITLE
+    -- DYNAMIC TITLE
     local titleLabel = Instance.new("TextLabel")
     titleLabel.Parent = mainFrame
     titleLabel.BackgroundTransparency = 1
     titleLabel.Position = UDim2.new(0, 0, 0.05, 0)
-    titleLabel.Size = UDim2.new(1, 0, 0.3, 0)
+    titleLabel.Size = UDim2.new(1, 0, 0.22, 0)
     titleLabel.Font = Enum.Font.GothamBold
-    titleLabel.Text = "Jadey😴 Tracker"
+    titleLabel.Text = isArtClass and "Jadey😴 Art Class" or "Jadey😴 AFK"
     titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
     titleLabel.TextScaled = true 
 
@@ -109,12 +110,29 @@ task.spawn(function()
     titleSizeConstraint.MinTextSize = 8
     titleSizeConstraint.Parent = titleLabel
 
+    -- DYNAMIC MODE INDICATOR
+    local modeLabel = Instance.new("TextLabel")
+    modeLabel.Parent = mainFrame
+    modeLabel.BackgroundTransparency = 1
+    modeLabel.Position = UDim2.new(0.05, 0, 0.28, 0)
+    modeLabel.Size = UDim2.new(0.9, 0, 0.22, 0)
+    modeLabel.Font = Enum.Font.GothamSemibold
+    modeLabel.Text = isArtClass and "🎨 Mode: Auto-Draw" or "⚖️ Mode: AFK Farm"
+    modeLabel.TextColor3 = isArtClass and Color3.fromRGB(255, 170, 255) or Color3.fromRGB(170, 255, 127)
+    modeLabel.TextScaled = true
+    modeLabel.TextXAlignment = Enum.TextXAlignment.Left
+    
+    local modeSizeConstraint = Instance.new("UITextSizeConstraint")
+    modeSizeConstraint.MaxTextSize = 13
+    modeSizeConstraint.MinTextSize = 7
+    modeSizeConstraint.Parent = modeLabel
+
     -- LEVEL
     local lvlLabel = Instance.new("TextLabel")
     lvlLabel.Parent = mainFrame
     lvlLabel.BackgroundTransparency = 1
-    lvlLabel.Position = UDim2.new(0.05, 0, 0.4, 0)
-    lvlLabel.Size = UDim2.new(0.9, 0, 0.25, 0)
+    lvlLabel.Position = UDim2.new(0.05, 0, 0.51, 0)
+    lvlLabel.Size = UDim2.new(0.9, 0, 0.22, 0)
     lvlLabel.Font = Enum.Font.GothamSemibold
     lvlLabel.Text = "🌟 Level: Loading..."
     lvlLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
@@ -130,8 +148,8 @@ task.spawn(function()
     local diaLabel = Instance.new("TextLabel")
     diaLabel.Parent = mainFrame
     diaLabel.BackgroundTransparency = 1
-    diaLabel.Position = UDim2.new(0.05, 0, 0.7, 0)
-    diaLabel.Size = UDim2.new(0.9, 0, 0.25, 0)
+    diaLabel.Position = UDim2.new(0.05, 0, 0.74, 0)
+    diaLabel.Size = UDim2.new(0.9, 0, 0.22, 0)
     diaLabel.Font = Enum.Font.GothamSemibold
     diaLabel.Text = "💎 Diamonds: Loading..."
     diaLabel.TextColor3 = Color3.fromRGB(85, 255, 255)
